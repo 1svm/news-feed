@@ -1,0 +1,30 @@
+.button {
+  cursor: pointer;
+  text-transform: uppercase;
+  font-weight: bold;
+  letter-spacing: 1px;
+  transition: background-color 200ms ease;
+}
+
+.size-small { font-size: 10px; padding: 5px 10px; }
+.size-medium { font-size: 14px; padding: 10px 20px; }
+.size-large { font-size: 18px; padding: 15px 30px; }
+
+.color-primary {
+  background-color: transparent;
+  color: black;
+}
+.color-secondary { background-color: gray; color: white; }
+.color-danger { background-color: red; color: white; }
+
+.color-primary:hover {
+  background-color: lightgreen;
+  color: black;
+}
+.color-secondary:hover { background-color: darkgray; }
+.color-danger:hover { background-color: darkred; }
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}

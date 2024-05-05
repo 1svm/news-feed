@@ -1,4 +1,9 @@
+import { Link } from "@remix-run/react";
 import type { MetaFunction } from "@remix-run/node";
+
+import { Text, Button } from "~/components/ui";
+import { Stack } from "~/components/layouts";
+import FeedsVideoPath from "~/assets/videos/feeds.mp4";
 
 export const meta: MetaFunction = () => {
   return [
@@ -9,33 +14,26 @@ export const meta: MetaFunction = () => {
 
 export default function Index() {
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
-      <h1>Welcome to Remix</h1>
-      <ul>
-        <li>
-          <a
-            target="_blank"
-            href="https://remix.run/tutorials/blog"
-            rel="noreferrer"
-          >
-            15m Quickstart Blog Tutorial
-          </a>
-        </li>
-        <li>
-          <a
-            target="_blank"
-            href="https://remix.run/tutorials/jokes"
-            rel="noreferrer"
-          >
-            Deep Dive Jokes App Tutorial
-          </a>
-        </li>
-        <li>
-          <a target="_blank" href="https://remix.run/docs" rel="noreferrer">
-            Remix Docs
-          </a>
-        </li>
-      </ul>
-    </div>
+    <Stack alignItems="center" gap="medium">
+      <video width={520} autoPlay muted loop>
+        <source src={FeedsVideoPath} type="video/mp4" />
+        Your browser does not support playing a video.
+      </video>
+
+      <Text size="large" weight="bold">
+        Personalize yours Feeds
+      </Text>
+
+      <Text size="small" color="gray">
+        The most interesting articles published by the feeds you personally
+        follow will be here.
+      </Text>
+
+      <Link to="/add-source">
+        <Button size="medium" color="primary" type="button">
+          Follow Feeds
+        </Button>
+      </Link>
+    </Stack>
   );
 }

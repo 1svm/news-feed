@@ -1,0 +1,16 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+}
+
+.align-stretch { align-items: stretch; }
+.align-center { align-items: center; }
+
+.justify-start { justify-content: flex-start; }
+.justify-center { justify-content: center; }
+
+.gap-small { gap: 8px; }
+.gap-medium { gap: 16px; }
+.gap-large { gap: 32px; }
+.gap-extra-large { gap: 64px; }
+.gap-xx-large { gap: 128px; }

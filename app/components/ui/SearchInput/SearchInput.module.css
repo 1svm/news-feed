@@ -1,0 +1,19 @@
+.searchInput {
+  letter-spacing: 1px;
+  border: 2px solid black;
+  width: 100%;
+  transition: border-color 100ms ease;
+}
+
+.size-small { font-size: 10px; padding: 5px 10px; }
+.size-medium { font-size: 14px; padding: 10px 20px; }
+.size-large { font-size: 18px; padding: 15px 30px; }
+
+.color-primary {  }
+.color-secondary {  }
+.color-danger {  }
+
+.searchInput:focus {
+  outline: none;
+  border-color: lightgreen;
+}
