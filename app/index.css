@@ -40,8 +40,4 @@
 :is(a, button, input, textarea, select) {
   outline: none;
   color: initial;
-  
-  &:focus {
-    outline: 1px solid lightgreen;
-  }
 }

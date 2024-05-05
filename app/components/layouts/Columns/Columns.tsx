@@ -14,7 +14,7 @@ export const Columns: React.FC<ColumnsProps> & {
 
 interface ColumnProps {
   children: React.ReactNode;
-  size?: "25" | "50" | "75" | "100";
+  size?: "25" | "50" | "75" | "100" | "30" | "70";
 }
 
 const Column: React.FC<ColumnProps> = ({ children, size }) => {
