@@ -33,16 +33,40 @@ export default function Search() {
 
       <Columns>
         <Columns.Column size="30">
-          <Dropdown
-            label="feed"
-            value={selectedValue}
-            onChange={handleSelectChange}
-            placeholder="Select an option"
-          >
-            <Dropdown.Option value="1">Option 1</Dropdown.Option>
-            <Dropdown.Option value="2">Option 2</Dropdown.Option>
-            <Dropdown.Option value="3">Option 3</Dropdown.Option>
-          </Dropdown>
+          <Stack gap="medium">
+            <Dropdown
+              label="feed"
+              value={selectedValue}
+              onChange={handleSelectChange}
+              placeholder="Select an option"
+            >
+              <Dropdown.Option value="1">Option 1</Dropdown.Option>
+              <Dropdown.Option value="2">Option 2</Dropdown.Option>
+              <Dropdown.Option value="3">Option 3</Dropdown.Option>
+            </Dropdown>
+
+            <Dropdown
+              label="published"
+              value={selectedValue}
+              onChange={handleSelectChange}
+              placeholder="Select an option"
+            >
+              <Dropdown.Option value="1">Option 1</Dropdown.Option>
+              <Dropdown.Option value="2">Option 2</Dropdown.Option>
+              <Dropdown.Option value="3">Option 3</Dropdown.Option>
+            </Dropdown>
+
+            <Dropdown
+              label="categories"
+              value={selectedValue}
+              onChange={handleSelectChange}
+              placeholder="Select an option"
+            >
+              <Dropdown.Option value="1">Option 1</Dropdown.Option>
+              <Dropdown.Option value="2">Option 2</Dropdown.Option>
+              <Dropdown.Option value="3">Option 3</Dropdown.Option>
+            </Dropdown>
+          </Stack>
         </Columns.Column>
 
         <Columns.Column size="70">
