@@ -44,14 +44,13 @@ class TheGuardianHandler implements INewsHandler {
   }
 
   async fetchNews(params: NewsParams) {
-    const news = await fetch(
+    return fetch(
       `${
         TheGuardianHandler.BASE_URL
       }?show-fields=thumbnail,body&show-tags=contributor&order-by=relevance&api-key=${
         this.apiKey
       }&${new URLSearchParams(this.mapParams(params))}`
-    );
-    return news.json();
+    ).then((res) => res.json());
   }
 
   processNews(news: any): News[] {
