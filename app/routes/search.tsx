@@ -31,7 +31,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export default function Search() {
   const news = useLoaderData<typeof loader>();
-  const [_, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   return (
     <Stack gap="large">
@@ -42,11 +42,9 @@ export default function Search() {
         <SearchInput
           size="large"
           color="primary"
+          value={searchParams.get("query") ?? ""}
           onEnterKeyPress={(value) => {
-            setSearchParams((prev) => {
-              prev.set("query", value);
-              return prev;
-            });
+            setSearchParams({ query: value });
           }}
         />
       </Stack>
@@ -59,6 +57,7 @@ export default function Search() {
               name="feed"
               label="feed"
               placeholder="Select feed"
+              value={searchParams.get("source") ?? ""}
               onChange={(e) => {
                 setSearchParams((prev) => {
                   prev.set("source", e.currentTarget.value);
@@ -80,21 +79,17 @@ export default function Search() {
               name="published"
               label="published"
               placeholder="Select age"
+              value={searchParams.get("fromDate") ?? ""}
+              onChange={(e) => {
+                setSearchParams((prev) => {
+                  prev.set("fromDate", e.currentTarget.value);
+                  return prev;
+                });
+              }}
             >
-              <Dropdown.Option value="1">Option 1</Dropdown.Option>
-              <Dropdown.Option value="2">Option 2</Dropdown.Option>
-              <Dropdown.Option value="3">Option 3</Dropdown.Option>
-            </Dropdown>
-
-            <Dropdown
-              disabled={!news?.length}
-              name="category"
-              label="category"
-              placeholder="Select cateogry"
-            >
-              <Dropdown.Option value="1">Option 1</Dropdown.Option>
-              <Dropdown.Option value="2">Option 2</Dropdown.Option>
-              <Dropdown.Option value="3">Option 3</Dropdown.Option>
+              <Dropdown.Option value="LAST_7">Last 7 Days</Dropdown.Option>
+              <Dropdown.Option value="LAST_30">Last 30 days</Dropdown.Option>
+              <Dropdown.Option value="LAST_90">Last 90 days</Dropdown.Option>
             </Dropdown>
           </Stack>
         </Columns.Column>
@@ -103,7 +98,7 @@ export default function Search() {
           {Array.isArray(news) && news.length > 0 ? (
             <Stack gap="large">
               {news.map((result: any) => (
-                <Card key={result.title}>
+                <Card key={result.title + result.age + result.source}>
                   <Card.Thumbnail
                     src={result.thumbnail}
                     alt="Thumbnail Description"

@@ -37,7 +37,25 @@ class TheGuardianHandler implements INewsHandler {
     return Object.entries(params).reduce((acc, [key, value]) => {
       const mappedKey = TheGuardianHandler.PARAMS_MAP[key];
       if (mappedKey) {
-        acc[mappedKey] = value;
+        if (key === "fromDate") {
+          if (value === "LAST_7") {
+            acc[mappedKey] = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+              .toISOString()
+              .split("T")[0];
+          }
+          if (value === "LAST_30") {
+            acc[mappedKey] = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+              .toISOString()
+              .split("T")[0];
+          }
+          if (value === "LAST_90") {
+            acc[mappedKey] = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
+              .toISOString()
+              .split("T")[0];
+          }
+        } else {
+          acc[mappedKey] = value;
+        }
       }
       return acc;
     }, {} as Record<string, string>);
@@ -71,6 +89,7 @@ class NewYorkTimesHandler implements INewsHandler {
   static BASE_URL = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
   static PARAMS_MAP: Record<string, string> = {
     query: "q",
+    fromDate: "pub_date",
   };
 
   private apiKey: string;
@@ -81,9 +100,27 @@ class NewYorkTimesHandler implements INewsHandler {
 
   mapParams(params: NewsParams) {
     return Object.entries(params).reduce((acc, [key, value]) => {
-      const mappedKey = TheGuardianHandler.PARAMS_MAP[key];
+      const mappedKey = NewYorkTimesHandler.PARAMS_MAP[key];
       if (mappedKey) {
-        acc[mappedKey] = value;
+        if (key === "fromDate") {
+          if (value === "LAST_7") {
+            acc[mappedKey] = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+              .toISOString()
+              .split("T")[0];
+          }
+          if (value === "LAST_30") {
+            acc[mappedKey] = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+              .toISOString()
+              .split("T")[0];
+          }
+          if (value === "LAST_90") {
+            acc[mappedKey] = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
+              .toISOString()
+              .split("T")[0];
+          }
+        } else {
+          acc[mappedKey] = value;
+        }
       }
       return acc;
     }, {} as Record<string, string>);
@@ -120,9 +157,10 @@ class NewYorkTimesHandler implements INewsHandler {
 
 class NewsOrgHandler implements INewsHandler {
   static ID = "NEWS_ORG" as const;
-  static BASE_URL = "https://newsapi.org/v2/top-headlines";
+  static BASE_URL = "https://newsapi.org/v2/everything";
   static PARAMS_MAP: Record<string, string> = {
     query: "q",
+    fromDate: "from",
   };
 
   private apiKey: string;
@@ -135,7 +173,25 @@ class NewsOrgHandler implements INewsHandler {
     return Object.entries(params).reduce((acc, [key, value]) => {
       const mappedKey = NewsOrgHandler.PARAMS_MAP[key];
       if (mappedKey) {
-        acc[mappedKey] = value;
+        if (key === "fromDate") {
+          if (value === "LAST_7") {
+            acc[mappedKey] = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+              .toISOString()
+              .split("T")[0];
+          }
+          if (value === "LAST_30") {
+            acc[mappedKey] = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+              .toISOString()
+              .split("T")[0];
+          }
+          if (value === "LAST_90") {
+            acc[mappedKey] = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
+              .toISOString()
+              .split("T")[0];
+          }
+        } else {
+          acc[mappedKey] = value;
+        }
       }
       return acc;
     }, {} as Record<string, string>);
