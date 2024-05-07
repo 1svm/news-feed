@@ -69,6 +69,9 @@ class TheGuardianHandler implements INewsHandler {
 class NewYorkTimesHandler implements INewsHandler {
   static ID = "NEW_YORK_TIMES" as const;
   static BASE_URL = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
+  static PARAMS_MAP: Record<string, string> = {
+    query: "q",
+  };
 
   private apiKey: string;
 
@@ -76,28 +79,51 @@ class NewYorkTimesHandler implements INewsHandler {
     this.apiKey = apiKey;
   }
 
-  async fetchNews(params: NewsParams) {
-    const news = await fetch(
-      `${NewYorkTimesHandler.BASE_URL}?${new URLSearchParams(params)}`
-    );
-    return news.json();
+  mapParams(params: NewsParams) {
+    return Object.entries(params).reduce((acc, [key, value]) => {
+      const mappedKey = TheGuardianHandler.PARAMS_MAP[key];
+      if (mappedKey) {
+        acc[mappedKey] = value;
+      }
+      return acc;
+    }, {} as Record<string, string>);
   }
 
-  processNews(news: any[]) {
-    return news.map((article: any) => ({
-      title: article.webTitle,
-      description: article.webTitle,
-      thumbnail: article.fields.thumbnail,
-      author: article.webTitle,
-      age: article.webPublicationDate,
-      source: NewYorkTimesHandler.ID,
-    }));
+  async fetchNews(params: NewsParams) {
+    return fetch(
+      `${
+        NewYorkTimesHandler.BASE_URL
+      }?fl=abstract,lead_paragraph,source,pub_date,multimedia&sort=relevance&api-key=${
+        this.apiKey
+      }&${new URLSearchParams(this.mapParams(params))}`
+    ).then((res) => res.json());
+  }
+
+  processNews(news: any): News[] {
+    return (news?.response?.docs ?? []).map((article: any) => {
+      const thumbnail = article?.multimedia?.find(
+        (m: any) => m.type === "image"
+      )?.url;
+      return {
+        title: article?.abstract,
+        description: article?.lead_paragraph,
+        thumbnail: thumbnail
+          ? `https://www.nytimes.com/${thumbnail}`
+          : undefined,
+        author: article?.source ?? "The New York Times",
+        age: article?.pub_date,
+        source: NewYorkTimesHandler.ID,
+      };
+    });
   }
 }
 
-class NewsAPIHandler implements INewsHandler {
-  static ID = "NEWS_API" as const;
-  static BASE_URL = "https://newsapi.org/v2/everything";
+class NewsOrgHandler implements INewsHandler {
+  static ID = "NEWS_ORG" as const;
+  static BASE_URL = "https://newsapi.org/v2/top-headlines";
+  static PARAMS_MAP: Record<string, string> = {
+    query: "q",
+  };
 
   private apiKey: string;
 
@@ -105,22 +131,35 @@ class NewsAPIHandler implements INewsHandler {
     this.apiKey = apiKey;
   }
 
-  async fetchNews(params: NewsParams) {
-    const news = await fetch(
-      `${NewsAPIHandler.BASE_URL}?${new URLSearchParams(params)}`
-    );
-    return news.json();
+  mapParams(params: NewsParams) {
+    return Object.entries(params).reduce((acc, [key, value]) => {
+      const mappedKey = NewsOrgHandler.PARAMS_MAP[key];
+      if (mappedKey) {
+        acc[mappedKey] = value;
+      }
+      return acc;
+    }, {} as Record<string, string>);
   }
 
-  processNews(news: any[]) {
-    return news.map((article: any) => ({
-      title: article.webTitle,
-      description: article.webTitle,
-      thumbnail: article.fields.thumbnail,
-      author: article.webTitle,
-      age: article.webPublicationDate,
-      source: NewYorkTimesHandler.ID,
-    }));
+  async fetchNews(params: NewsParams) {
+    return fetch(
+      `${NewsOrgHandler.BASE_URL}?apiKey=${this.apiKey}&${new URLSearchParams(
+        this.mapParams(params)
+      )}`
+    ).then((res) => res.json());
+  }
+
+  processNews(news: any): News[] {
+    return news.articles.map((article: any) => {
+      return {
+        title: article?.title,
+        description: article?.description,
+        thumbnail: article?.urlToImage,
+        author: article?.author ?? "News Org",
+        age: article?.publishedAt,
+        source: NewsOrgHandler.ID,
+      };
+    });
   }
 }
 
@@ -145,17 +184,16 @@ export class NewsService {
       NewYorkTimesHandler.ID,
       new NewYorkTimesHandler(newYorkTimesApiKey)
     );
-    this.handlers.set(NewsAPIHandler.ID, new NewsAPIHandler(newsApiKey));
+    this.handlers.set(NewsOrgHandler.ID, new NewsOrgHandler(newsApiKey));
   }
 
   async fetchNews(url: string): Promise<News[]> {
     const { source, params } = this.constructParams(url);
     if (!params.query) return [];
 
-    // const handlers = source
-    //   ? [this.handlers.get(source)]
-    //   : Array.from(this.handlers.values());
-    const handlers = [this.handlers.get(TheGuardianHandler.ID)];
+    const handlers = source
+      ? [this.handlers.get(source)]
+      : Array.from(this.handlers.values());
 
     const fetchPromises = handlers.map((handler?: INewsHandler) =>
       handler?.fetchNews(params)
