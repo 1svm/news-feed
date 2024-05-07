@@ -6,32 +6,36 @@ interface SearchInputProps {
   placeholder?: string;
   size?: "small" | "medium" | "large";
   color?: "primary" | "secondary" | "danger";
-  onSearch: (value: string) => void;
+  value?: string;
+  onChange?: (value: string) => void;
 }
 
 export const SearchInput: React.FC<SearchInputProps> = ({
   size,
   color,
-  onSearch,
+  value,
+  onChange,
   placeholder = "Press enter to search...",
+  ...props
 }) => {
   const inputClasses = cx(styles.searchInput, {
     [styles[`size-${size}`]]: size,
     [styles[`color-${color}`]]: color,
   });
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      onSearch((event.target as HTMLInputElement).value);
-    }
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onChange?.((event.target as HTMLInputElement).value);
   };
 
   return (
     <input
-      type="search"
+      type="text"
+      name="query"
       className={inputClasses}
       placeholder={placeholder}
-      onKeyDown={handleKeyDown}
+      onChange={handleChange}
+      value={value}
+      {...props}
     />
   );
 };

@@ -4,9 +4,9 @@ import styles from "./Dropdown.module.css";
 interface DropdownProps {
   children: ReactNode;
   value: string;
-  onChange: (value: string) => void;
   label?: string;
   placeholder?: string;
+  onChange?: (value: string) => void;
 }
 
 export const Dropdown: React.FC<DropdownProps> & {
@@ -18,7 +18,7 @@ export const Dropdown: React.FC<DropdownProps> & {
       <select
         className={styles.select}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => onChange?.(e.target.value)}
       >
         {placeholder && !value && <option value="">{placeholder}</option>}
         {children}

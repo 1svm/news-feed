@@ -1,11 +1,7 @@
 type NewsParams = {
   query: string;
-  source?:
-    | typeof TheGuardianHandler.ID
-    | typeof NewYorkTimesHandler.ID
-    | typeof NewsAPIHandler.ID;
   fromDate?: string;
-  categories?: string;
+  category?: string;
 };
 
 type News = {
@@ -25,6 +21,11 @@ interface INewsHandler {
 class TheGuardianHandler implements INewsHandler {
   static ID = "THE_GUARDIAN" as const;
   static BASE_URL = "https://content.guardianapis.com/search";
+  static PARAMS_MAP: Record<string, string> = {
+    query: "q",
+    fromDate: "from-date",
+    categories: "section",
+  };
 
   private apiKey: string;
 
@@ -32,20 +33,35 @@ class TheGuardianHandler implements INewsHandler {
     this.apiKey = apiKey;
   }
 
+  mapParams(params: NewsParams) {
+    return Object.entries(params).reduce((acc, [key, value]) => {
+      const mappedKey = TheGuardianHandler.PARAMS_MAP[key];
+      if (mappedKey) {
+        acc[mappedKey] = value;
+      }
+      return acc;
+    }, {} as Record<string, string>);
+  }
+
   async fetchNews(params: NewsParams) {
     const news = await fetch(
-      `${TheGuardianHandler.BASE_URL}?${new URLSearchParams(params)}`
+      `${
+        TheGuardianHandler.BASE_URL
+      }?show-fields=thumbnail,body&show-tags=contributor&order-by=relevance&api-key=${
+        this.apiKey
+      }&${new URLSearchParams(this.mapParams(params))}`
     );
     return news.json();
   }
 
-  processNews(news: any[]) {
-    return news.map((article: any) => ({
-      title: article.webTitle,
-      description: article.webTitle,
-      thumbnail: article.fields.thumbnail,
-      author: article.webTitle,
-      age: article.webPublicationDate,
+  processNews(news: any): News[] {
+    return news.response.results.map((article: any) => ({
+      title: article?.webTitle,
+      description: article?.fields?.body,
+      thumbnail: article?.fields?.thumbnail,
+      author: article?.tags?.find((tag: any) => tag?.type === "contributor")
+        ?.webTitle,
+      age: article?.webPublicationDate,
       source: TheGuardianHandler.ID,
     }));
   }
@@ -109,31 +125,65 @@ class NewsAPIHandler implements INewsHandler {
   }
 }
 
-class NewsService {
+export class NewsService {
   private handlers: Map<string, INewsHandler>;
 
-  constructor() {
+  constructor({
+    theGuardianApiKey,
+    newYorkTimesApiKey,
+    newsApiKey,
+  }: {
+    theGuardianApiKey: string;
+    newYorkTimesApiKey: string;
+    newsApiKey: string;
+  }) {
     this.handlers = new Map<string, INewsHandler>();
-    this.handlers.set(TheGuardianHandler.ID, new TheGuardianHandler("abc"));
-    this.handlers.set(NewYorkTimesHandler.ID, new NewYorkTimesHandler("abc"));
-    this.handlers.set(NewsAPIHandler.ID, new NewsAPIHandler("abc"));
+    this.handlers.set(
+      TheGuardianHandler.ID,
+      new TheGuardianHandler(theGuardianApiKey)
+    );
+    this.handlers.set(
+      NewYorkTimesHandler.ID,
+      new NewYorkTimesHandler(newYorkTimesApiKey)
+    );
+    this.handlers.set(NewsAPIHandler.ID, new NewsAPIHandler(newsApiKey));
   }
 
-  async fetchNews(params: NewsParams): Promise<News[]> {
-    const handlers = params.source
-      ? [this.handlers.get(params.source)]
-      : Array.from(this.handlers.values());
+  async fetchNews(url: string): Promise<News[]> {
+    const { source, params } = this.constructParams(url);
+    // const handlers = source
+    //   ? [this.handlers.get(source)]
+    //   : Array.from(this.handlers.values());
+    const handlers = [this.handlers.get(TheGuardianHandler.ID)];
 
     const fetchPromises = handlers.map((handler?: INewsHandler) =>
       handler?.fetchNews(params)
     );
-    const results = await Promise.all(fetchPromises);
 
-    return results.reduce((acc = [], curr, idx) => {
-      const handler = handlers[idx];
-      const normalizedNews = handler?.processNews(curr!) as News[];
-      acc.push(...normalizedNews);
-      return acc;
-    }, [] as News[]) as News[];
+    return Promise.all(fetchPromises).then((results) => {
+      return results.reduce((acc = [], curr, idx) => {
+        const handler = handlers[idx];
+        const normalizedNews = handler?.processNews(curr!) as News[];
+        acc.push(...normalizedNews);
+        return acc;
+      }, []) as News[];
+    });
+  }
+
+  constructParams(url: string) {
+    const urlObject = new URL(url);
+    const source = urlObject.searchParams.get("source");
+    urlObject.searchParams.delete("source");
+    const params: Record<string, string> = {};
+    for (const [key, value] of urlObject.searchParams) {
+      if (value) {
+        params[key] = value;
+      }
+    }
+
+    return {
+      source,
+      params: params as NewsParams,
+    };
   }
 }

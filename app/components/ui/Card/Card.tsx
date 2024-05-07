@@ -38,7 +38,7 @@ interface DescriptionProps {
 }
 
 const Description: React.FC<DescriptionProps> = ({ children }) => {
-  return <p className={styles.description}>{children}</p>;
+  return <div className={styles.description}>{children}</div>;
 };
 
 interface AuthorProps {
