@@ -150,6 +150,8 @@ export class NewsService {
 
   async fetchNews(url: string): Promise<News[]> {
     const { source, params } = this.constructParams(url);
+    if (!params.query) return [];
+
     // const handlers = source
     //   ? [this.handlers.get(source)]
     //   : Array.from(this.handlers.values());

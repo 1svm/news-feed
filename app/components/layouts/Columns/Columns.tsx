@@ -8,13 +8,13 @@ interface ColumnsProps {
 
 export const Columns: React.FC<ColumnsProps> & {
   Column: typeof Column;
-} = ({ children }) => {
+} = ({ children = <></> }) => {
   return <div className={styles.columns}>{children}</div>;
 };
 
 interface ColumnProps {
   children: React.ReactNode;
-  size?: "25" | "50" | "75" | "100" | "30" | "70";
+  size?: "25" | "75";
 }
 
 const Column: React.FC<ColumnProps> = ({ children, size }) => {

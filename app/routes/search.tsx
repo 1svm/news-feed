@@ -41,43 +41,49 @@ export default function Search() {
           <SearchInput size="large" color="primary" />
         </Stack>
 
-        {fetcher.data ? (
-          <Columns>
-            <Columns.Column size="30">
-              <Stack gap="medium">
-                <Dropdown
-                  label="feed"
-                  value={""}
-                  placeholder="Select an option"
-                >
-                  <Dropdown.Option value="1">Option 1</Dropdown.Option>
-                  <Dropdown.Option value="2">Option 2</Dropdown.Option>
-                  <Dropdown.Option value="3">Option 3</Dropdown.Option>
-                </Dropdown>
+        <Columns>
+          <Columns.Column size="25">
+            <Stack gap="medium">
+              <Dropdown
+                disabled={!fetcher.data}
+                name="feed"
+                label="feed"
+                value={""}
+                placeholder="Select feed"
+              >
+                <Dropdown.Option value="1">Option 1</Dropdown.Option>
+                <Dropdown.Option value="2">Option 2</Dropdown.Option>
+                <Dropdown.Option value="3">Option 3</Dropdown.Option>
+              </Dropdown>
 
-                <Dropdown
-                  label="published"
-                  value={""}
-                  placeholder="Select an option"
-                >
-                  <Dropdown.Option value="1">Option 1</Dropdown.Option>
-                  <Dropdown.Option value="2">Option 2</Dropdown.Option>
-                  <Dropdown.Option value="3">Option 3</Dropdown.Option>
-                </Dropdown>
+              <Dropdown
+                disabled={!fetcher.data}
+                name="published"
+                label="published"
+                value={""}
+                placeholder="Select age"
+              >
+                <Dropdown.Option value="1">Option 1</Dropdown.Option>
+                <Dropdown.Option value="2">Option 2</Dropdown.Option>
+                <Dropdown.Option value="3">Option 3</Dropdown.Option>
+              </Dropdown>
 
-                <Dropdown
-                  label="categories"
-                  value={""}
-                  placeholder="Select an option"
-                >
-                  <Dropdown.Option value="1">Option 1</Dropdown.Option>
-                  <Dropdown.Option value="2">Option 2</Dropdown.Option>
-                  <Dropdown.Option value="3">Option 3</Dropdown.Option>
-                </Dropdown>
-              </Stack>
-            </Columns.Column>
+              <Dropdown
+                disabled={!fetcher.data}
+                name="category"
+                label="category"
+                value={""}
+                placeholder="Select cateogry"
+              >
+                <Dropdown.Option value="1">Option 1</Dropdown.Option>
+                <Dropdown.Option value="2">Option 2</Dropdown.Option>
+                <Dropdown.Option value="3">Option 3</Dropdown.Option>
+              </Dropdown>
+            </Stack>
+          </Columns.Column>
 
-            <Columns.Column size="70">
+          <Columns.Column size="75">
+            {fetcher.data ? (
               <Stack gap="large">
                 {fetcher.data.map((result: any) => (
                   <Card key={result.title}>
@@ -94,9 +100,9 @@ export default function Search() {
                   </Card>
                 ))}
               </Stack>
-            </Columns.Column>
-          </Columns>
-        ) : null}
+            ) : null}
+          </Columns.Column>
+        </Columns>
       </Stack>
     </fetcher.Form>
   );

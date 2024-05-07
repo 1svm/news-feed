@@ -15,7 +15,7 @@
 .select {
   width: 100%;
   padding: 15px 30px;
-  border: 2px solid lightslategray;
+  border: 2px solid black;
   font-size: 18px;
   cursor: pointer;
   appearance: none;
@@ -29,6 +29,11 @@
   transform: translateY(-75%);
   pointer-events: none;
   z-index: 1;
+}
+
+.select:disabled {
+  background-color: lightgray;
+  cursor: not-allowed;
 }
 
 .select:focus {
