@@ -45,22 +45,24 @@ export default function Search() {
           <Columns.Column size="25">
             <Stack gap="medium">
               <Dropdown
-                disabled={!fetcher.data}
+                disabled={!fetcher.data?.length}
                 name="feed"
                 label="feed"
-                value={""}
                 placeholder="Select feed"
               >
-                <Dropdown.Option value="1">Option 1</Dropdown.Option>
-                <Dropdown.Option value="2">Option 2</Dropdown.Option>
-                <Dropdown.Option value="3">Option 3</Dropdown.Option>
+                <Dropdown.Option value="THE_GUARDIAN">
+                  The Guardian
+                </Dropdown.Option>
+                <Dropdown.Option value="NEW_YORK_TIMES">
+                  New York Times
+                </Dropdown.Option>
+                <Dropdown.Option value="NEWS_API">News.org</Dropdown.Option>
               </Dropdown>
 
               <Dropdown
-                disabled={!fetcher.data}
+                disabled={!fetcher.data?.length}
                 name="published"
                 label="published"
-                value={""}
                 placeholder="Select age"
               >
                 <Dropdown.Option value="1">Option 1</Dropdown.Option>
@@ -69,10 +71,9 @@ export default function Search() {
               </Dropdown>
 
               <Dropdown
-                disabled={!fetcher.data}
+                disabled={!fetcher.data?.length}
                 name="category"
                 label="category"
-                value={""}
                 placeholder="Select cateogry"
               >
                 <Dropdown.Option value="1">Option 1</Dropdown.Option>
@@ -83,7 +84,7 @@ export default function Search() {
           </Columns.Column>
 
           <Columns.Column size="75">
-            {fetcher.data ? (
+            {fetcher.data?.length > 0 ? (
               <Stack gap="large">
                 {fetcher.data.map((result: any) => (
                   <Card key={result.title}>

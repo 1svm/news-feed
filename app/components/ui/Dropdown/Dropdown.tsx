@@ -3,7 +3,6 @@ import styles from "./Dropdown.module.css";
 
 interface DropdownProps extends React.HTMLProps<HTMLSelectElement> {
   children: ReactNode;
-  value: string;
   label?: string;
   placeholder?: string;
 }
