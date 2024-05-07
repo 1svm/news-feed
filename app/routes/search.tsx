@@ -72,7 +72,7 @@ export default function Search() {
               <Dropdown.Option value="NEW_YORK_TIMES">
                 New York Times
               </Dropdown.Option>
-              <Dropdown.Option value="NEWS_API">News.org</Dropdown.Option>
+              <Dropdown.Option value="NEWS_ORG">News.org</Dropdown.Option>
             </Dropdown>
 
             <Dropdown
@@ -111,7 +111,9 @@ export default function Search() {
                   <Card.Content>
                     <Card.Title>{result.title}</Card.Title>
                     <Card.Description>{result?.description}</Card.Description>
-                    <Card.Author>by {result.author}</Card.Author>
+                    <Card.Author>
+                      by {result.author} ({result.source})
+                    </Card.Author>
                     <Card.Age>{result.age}</Card.Age>
                   </Card.Content>
                 </Card>
