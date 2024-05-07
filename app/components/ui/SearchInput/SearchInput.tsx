@@ -13,7 +13,6 @@ interface SearchInputProps {
 export const SearchInput: React.FC<SearchInputProps> = ({
   size,
   color,
-  value,
   onChange,
   placeholder = "Press enter to search...",
   ...props
@@ -34,7 +33,6 @@ export const SearchInput: React.FC<SearchInputProps> = ({
       className={inputClasses}
       placeholder={placeholder}
       onChange={handleChange}
-      value={value}
       {...props}
     />
   );
