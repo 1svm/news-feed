@@ -18,13 +18,26 @@ interface INewsHandler {
   processNews(news: any[]): News[];
 }
 
-class TheGuardianHandler implements INewsHandler {
+export type HandlerID =
+  | typeof TheGuardianHandler.ID
+  | typeof NewYorkTimesHandler.ID
+  | typeof NewsOrgHandler.ID;
+
+export class TheGuardianHandler implements INewsHandler {
   static ID = "THE_GUARDIAN" as const;
   static BASE_URL = "https://content.guardianapis.com/search";
-  static PARAMS_MAP: Record<string, string> = {
+  static PARAMS_MAP: Record<keyof NewsParams, string> = {
     query: "q",
     fromDate: "from-date",
-    categories: "section",
+    category: "section",
+  };
+  static CATEGORY_MAP: Record<string, string[]> = {
+    business: ["business"],
+    entertainment: ["music"],
+    health: ["wellness"],
+    science: ["science"],
+    sports: ["sport"],
+    technology: ["technology"],
   };
 
   private apiKey: string;
@@ -35,11 +48,16 @@ class TheGuardianHandler implements INewsHandler {
 
   mapParams(params: NewsParams) {
     return Object.entries(params).reduce((acc, [key, value]) => {
-      const mappedKey = TheGuardianHandler.PARAMS_MAP[key];
+      const mappedKey = TheGuardianHandler.PARAMS_MAP[key as keyof NewsParams];
       if (mappedKey) {
         if (key === "fromDate") {
           if (value === "LAST_7") {
             acc[mappedKey] = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+              .toISOString()
+              .split("T")[0];
+          }
+          if (value === "LAST_15") {
+            acc[mappedKey] = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000)
               .toISOString()
               .split("T")[0];
           }
@@ -48,10 +66,10 @@ class TheGuardianHandler implements INewsHandler {
               .toISOString()
               .split("T")[0];
           }
-          if (value === "LAST_90") {
-            acc[mappedKey] = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
-              .toISOString()
-              .split("T")[0];
+        } else if (key === "category") {
+          const category = TheGuardianHandler.CATEGORY_MAP[value];
+          if (category) {
+            acc[mappedKey] = category.join(",");
           }
         } else {
           acc[mappedKey] = value;
@@ -74,7 +92,7 @@ class TheGuardianHandler implements INewsHandler {
   processNews(news: any): News[] {
     return news.response.results.map((article: any) => ({
       title: article?.webTitle,
-      description: article?.fields?.body,
+      description: (article?.fields?.body || "").substring(0, 200),
       thumbnail: article?.fields?.thumbnail,
       author: article?.tags?.find((tag: any) => tag?.type === "contributor")
         ?.webTitle,
@@ -84,12 +102,28 @@ class TheGuardianHandler implements INewsHandler {
   }
 }
 
-class NewYorkTimesHandler implements INewsHandler {
+export class NewYorkTimesHandler implements INewsHandler {
   static ID = "NEW_YORK_TIMES" as const;
   static BASE_URL = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
-  static PARAMS_MAP: Record<string, string> = {
+  static PARAMS_MAP: Record<keyof NewsParams, string> = {
     query: "q",
-    fromDate: "pub_date",
+    fromDate: "fq",
+    category: "fq",
+  };
+  static CATEGORY_MAP: Record<string, string[]> = {
+    business: ["Business Day"],
+    entertainment: ["arts", "movies", "theater"],
+    health: ["health", "well"],
+    science: ["science", "climate", "space", "energy", "environment"],
+    sports: ["sports", "football", "basketball", "baseball"],
+    technology: [
+      "technology",
+      "personaltech",
+      "gadgets",
+      "apps",
+      "internet",
+      "games",
+    ],
   };
 
   private apiKey: string;
@@ -100,23 +134,34 @@ class NewYorkTimesHandler implements INewsHandler {
 
   mapParams(params: NewsParams) {
     return Object.entries(params).reduce((acc, [key, value]) => {
-      const mappedKey = NewYorkTimesHandler.PARAMS_MAP[key];
+      const mappedKey = NewYorkTimesHandler.PARAMS_MAP[key as keyof NewsParams];
       if (mappedKey) {
         if (key === "fromDate") {
           if (value === "LAST_7") {
-            acc[mappedKey] = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-              .toISOString()
-              .split("T")[0];
+            acc[mappedKey] = `pub_date:("${
+              new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+                .toISOString()
+                .split("T")[0]
+            }")`;
+          }
+          if (value === "LAST_15") {
+            acc[mappedKey] = `pub_date:("${
+              new Date(Date.now() - 15 * 24 * 60 * 60 * 1000)
+                .toISOString()
+                .split("T")[0]
+            }")`;
           }
           if (value === "LAST_30") {
-            acc[mappedKey] = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
-              .toISOString()
-              .split("T")[0];
+            acc[mappedKey] = `pub_date:("${
+              new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+                .toISOString()
+                .split("T")[0]
+            }")`;
           }
-          if (value === "LAST_90") {
-            acc[mappedKey] = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
-              .toISOString()
-              .split("T")[0];
+        } else if (key === "category") {
+          const category = NewYorkTimesHandler.CATEGORY_MAP[value];
+          if (category) {
+            acc[mappedKey] = `section_name:("${category.join('","')}")`;
           }
         } else {
           acc[mappedKey] = value;
@@ -143,7 +188,7 @@ class NewYorkTimesHandler implements INewsHandler {
       )?.url;
       return {
         title: article?.abstract,
-        description: article?.lead_paragraph,
+        description: (article?.lead_paragraph || "").substring(0, 200),
         thumbnail: thumbnail
           ? `https://www.nytimes.com/${thumbnail}`
           : undefined,
@@ -155,12 +200,21 @@ class NewYorkTimesHandler implements INewsHandler {
   }
 }
 
-class NewsOrgHandler implements INewsHandler {
+export class NewsOrgHandler implements INewsHandler {
   static ID = "NEWS_ORG" as const;
   static BASE_URL = "https://newsapi.org/v2/everything";
-  static PARAMS_MAP: Record<string, string> = {
+  static PARAMS_MAP: Record<keyof NewsParams, string> = {
     query: "q",
     fromDate: "from",
+    category: "",
+  };
+  static CATEGORY_MAP: Record<string, string[]> = {
+    business: ["business", "economy", "finance"],
+    entertainment: ["entertainment", "celebrity", "movies", "music"],
+    health: ["health", "wellness", "fitness", "nutrition"],
+    science: ["science", "technology", "research", "innovation"],
+    sports: ["sports", "football", "basketball", "baseball"],
+    technology: ["technology", "gadgets", "apps", "internet"],
   };
 
   private apiKey: string;
@@ -171,7 +225,7 @@ class NewsOrgHandler implements INewsHandler {
 
   mapParams(params: NewsParams) {
     return Object.entries(params).reduce((acc, [key, value]) => {
-      const mappedKey = NewsOrgHandler.PARAMS_MAP[key];
+      const mappedKey = NewsOrgHandler.PARAMS_MAP[key as keyof NewsParams];
       if (mappedKey) {
         if (key === "fromDate") {
           if (value === "LAST_7") {
@@ -179,13 +233,13 @@ class NewsOrgHandler implements INewsHandler {
               .toISOString()
               .split("T")[0];
           }
-          if (value === "LAST_30") {
-            acc[mappedKey] = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+          if (value === "LAST_15") {
+            acc[mappedKey] = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000)
               .toISOString()
               .split("T")[0];
           }
-          if (value === "LAST_90") {
-            acc[mappedKey] = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
+          if (value === "LAST_30") {
+            acc[mappedKey] = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
               .toISOString()
               .split("T")[0];
           }
@@ -199,9 +253,9 @@ class NewsOrgHandler implements INewsHandler {
 
   async fetchNews(params: NewsParams) {
     return fetch(
-      `${NewsOrgHandler.BASE_URL}?apiKey=${this.apiKey}&${new URLSearchParams(
+      `${NewsOrgHandler.BASE_URL}?${new URLSearchParams(
         this.mapParams(params)
-      )}`
+      )}pageSize=10&sortBy=popularity&sources=google-news&apiKey=${this.apiKey}`
     ).then((res) => res.json());
   }
 
@@ -209,7 +263,7 @@ class NewsOrgHandler implements INewsHandler {
     return news.articles.map((article: any) => {
       return {
         title: article?.title,
-        description: article?.description,
+        description: (article?.description || "").substring(0, 200),
         thumbnail: article?.urlToImage,
         author: article?.author ?? "News Org",
         age: article?.publishedAt,
@@ -245,8 +299,6 @@ export class NewsService {
 
   async fetchNews(url: string): Promise<News[]> {
     const { source, params } = this.constructParams(url);
-    if (!params.query) return [];
-
     const handlers = source
       ? [this.handlers.get(source)]
       : Array.from(this.handlers.values());

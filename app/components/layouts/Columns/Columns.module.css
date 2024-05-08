@@ -1,6 +1,5 @@
 .columns {
   display: flex;
-  flex-wrap: nowrap;
   gap: 40px;
 }
 
@@ -9,11 +8,16 @@
   flex-direction: column;
 }
 
-.size-25 { flex: 1; }
-.size-75 { flex: 4; }
+.size-25 {
+  flex: 1;
+}
 
-@media (max-width: 960px) {
-  .size-25, .size-75 {
-    flex: 1;
+.size-75 {
+  flex: 3;
+}
+
+@media (max-width: 1096px) {
+  .column {
+    flex-direction: column;
   }
 }

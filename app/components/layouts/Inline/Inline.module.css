@@ -1,6 +1,7 @@
 .inline {
   display: inline-flex;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .align-stretch { align-items: stretch; }
@@ -14,6 +15,13 @@
 .gap-large { gap: 32px; }
 .gap-extra-large { gap: 64px; }
 .gap-xx-large { gap: 128px; }
+
+@media (max-width: 768px) {
+  .inline {
+    display: flex;
+    justify-content: center;
+  }
+}
 
 @media (max-width: 430px) {
   .inline {

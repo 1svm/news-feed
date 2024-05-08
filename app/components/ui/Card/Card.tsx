@@ -1,8 +1,15 @@
 import React from "react";
+import classNames from "classnames";
+
 import styles from "./Card.module.css";
 
 interface CardProps {
   children: React.ReactNode;
+  size?: "small" | "medium" | "large";
+  dark?: boolean;
+  padding?: boolean;
+  selected?: boolean;
+  onClick?: () => void;
 }
 
 const Card: React.FC<CardProps> & {
@@ -12,12 +19,25 @@ const Card: React.FC<CardProps> & {
   Author: typeof Author;
   Age: typeof Age;
   Content: typeof Content;
-} = ({ children }) => {
-  return <div className={styles.card}>{children}</div>;
+} = ({ children, size, dark, padding, selected, onClick = () => {} }) => {
+  const cardClass = classNames(styles.card, {
+    [styles.small]: size === "small",
+    [styles.medium]: size === "medium",
+    [styles.large]: size === "large",
+    [styles.dark]: dark,
+    [styles.padding]: padding,
+    [styles.selected]: selected,
+  });
+
+  return (
+    <div className={cardClass} onClick={onClick}>
+      {children}
+    </div>
+  );
 };
 
 interface ThumbnailProps {
-  src: string;
+  src: any;
   alt: string;
 }
 

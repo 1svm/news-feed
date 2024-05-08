@@ -26,6 +26,10 @@ export const meta: MetaFunction = () => {
 };
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const urlObject = new URL(request.url);
+  const query = urlObject.searchParams.get("query");
+  if (!query) return [];
+
   return json(await newsService.fetchNews(request.url));
 };
 
@@ -85,8 +89,8 @@ export default function Search() {
               }}
             >
               <Dropdown.Option value="LAST_7">Last 7 Days</Dropdown.Option>
+              <Dropdown.Option value="LAST_15">Last 15 days</Dropdown.Option>
               <Dropdown.Option value="LAST_30">Last 30 days</Dropdown.Option>
-              <Dropdown.Option value="LAST_90">Last 90 days</Dropdown.Option>
             </Dropdown>
           </Stack>
         </Columns.Column>
@@ -94,8 +98,12 @@ export default function Search() {
         <Columns.Column size="75">
           {Array.isArray(news) && news.length > 0 ? (
             <Stack gap="large">
-              {news.map((result: any) => (
-                <Card key={result.title + result.age + result.source}>
+              {[news[5]].map((result: any) => (
+                <Card
+                  key={
+                    result.title + result.age + result.source + result.thumbnail
+                  }
+                >
                   <Card.Thumbnail
                     src={result.thumbnail}
                     alt="Thumbnail Description"
