@@ -98,7 +98,7 @@ export default function Search() {
         <Columns.Column size="75">
           {Array.isArray(news) && news.length > 0 ? (
             <Stack gap="large">
-              {[news[5]].map((result: any) => (
+              {news.map((result: any) => (
                 <Card
                   key={
                     result.title + result.age + result.source + result.thumbnail

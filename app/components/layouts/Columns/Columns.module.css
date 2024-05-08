@@ -16,8 +16,8 @@
   flex: 3;
 }
 
-@media (max-width: 1096px) {
-  .column {
+@media (max-width: 1000px) {
+  .columns {
     flex-direction: column;
   }
 }
