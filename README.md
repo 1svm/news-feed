@@ -1,36 +1,29 @@
-# Welcome to Remix + Vite!
+# Welcome to News Feed application based on React + Remix + Vite!
 
 📖 See the [Remix docs](https://remix.run/docs) and the [Remix Vite docs](https://remix.run/docs/en/main/guides/vite) for details on supported features.
 
-## Development
-
-Run the Vite dev server:
+## Build the application
 
 ```shellscript
-npm run dev
+docker build -t news-feed .
 ```
 
-## Deployment
+## Run application
 
-First, build your app for production:
-
-```sh
-npm run build
+```shellscript
+docker run -it -p 7000:7000 news-feed
 ```
 
-Then run the app in production mode:
+## Screenshots
 
-```sh
-npm start
-```
+### Home Page
 
-Now you'll need to pick a host to deploy it to.
+![Home Page](/public/Homepage.png)
 
-### DIY
+### Search Page
 
-If you're familiar with deploying Node applications, the built-in Remix app server is production-ready.
+![Search Page](/public/Search.png)
 
-Make sure to deploy the output of `npm run build`
+### Settings.png
 
-- `build/server`
-- `build/client`
+![Settings Page](/public/Settings.png)
