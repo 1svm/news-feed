@@ -14,23 +14,23 @@ export const meta: MetaFunction = () => {
 
 export default function Index() {
   return (
-    <Stack alignItems="center" gap="medium">
-      <video width={520} autoPlay muted loop>
+    <Stack alignItems="center" gap="large">
+      <video width={560} autoPlay muted loop>
         <source src={FeedsVideoPath} type="video/mp4" />
         Your browser does not support playing a video.
       </video>
 
-      <Text size="large" weight="bold">
+      <Text size="x-large" weight="bold">
         Personalize yours Feeds
       </Text>
 
-      <Text size="small" color="gray">
+      <Text size="medium" color="gray">
         The most interesting articles published by the feeds you personally
         follow will be here.
       </Text>
 
       <Link to="/add-source">
-        <Button size="medium" color="primary" type="button">
+        <Button size="large" color="primary" type="button">
           Follow Feeds
         </Button>
       </Link>

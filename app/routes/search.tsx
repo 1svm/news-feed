@@ -31,7 +31,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export default function Search() {
   const news = useLoaderData<typeof loader>();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [_, setSearchParams] = useSearchParams();
 
   return (
     <Stack gap="large">
@@ -42,7 +42,6 @@ export default function Search() {
         <SearchInput
           size="large"
           color="primary"
-          value={searchParams.get("query") ?? ""}
           onEnterKeyPress={(value) => {
             setSearchParams({ query: value });
           }}
@@ -57,7 +56,6 @@ export default function Search() {
               name="feed"
               label="feed"
               placeholder="Select feed"
-              value={searchParams.get("source") ?? ""}
               onChange={(e) => {
                 setSearchParams((prev) => {
                   prev.set("source", e.currentTarget.value);
@@ -79,7 +77,6 @@ export default function Search() {
               name="published"
               label="published"
               placeholder="Select age"
-              value={searchParams.get("fromDate") ?? ""}
               onChange={(e) => {
                 setSearchParams((prev) => {
                   prev.set("fromDate", e.currentTarget.value);

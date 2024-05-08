@@ -4,7 +4,7 @@ import classNames from "classnames";
 
 interface TextProps {
   children: ReactNode;
-  size?: "small" | "medium" | "large";
+  size?: "small" | "medium" | "large" | "x-large";
   color?: "black" | "gray" | "lightskyblue";
   weight?: "normal" | "bold";
   align?: "left" | "center" | "right";
